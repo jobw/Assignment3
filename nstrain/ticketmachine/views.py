@@ -60,7 +60,7 @@ def planning(request):
         gotform = SelectTicketForm(request.GET)
         return render(request, "ticketmachine/planning.html", {
             "form": PaymentForm({'payment': '2'}),
-            "price": getprice(gotform['from_station'].value(),gotform['to_station'].value(),gotform['travel_class'].value()),
+            "price": getprice(gotform['from_station'].value(),gotform['to_station'].value(),gotform['travel_class'].value(),gotform['way'].value()),
             "trips": gettrips(gotform['from_station'].value(),gotform['to_station'].value()),
         })
 
@@ -116,7 +116,8 @@ def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/price"
     params = {"fromStation" : from_station,
               "toStation" : to_station,
-              "travelClass": str(travel_class)}
+              "travelClass" : str(travel_class),
+              "travelType" : way}
     headers = {'Ocp-Apim-Subscription-Key': '06f223dd2fbc41389afc332c14d17447'}
 
     # SEND A PROPER REQUEST TO URL AND POPULATE "total_price" WITH "totalPriceInCents" FIELD IN THE RESPONSE
