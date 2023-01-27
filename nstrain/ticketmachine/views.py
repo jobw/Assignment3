@@ -60,7 +60,7 @@ def planning(request):
         gotform = SelectTicketForm(request.GET)
         return render(request, "ticketmachine/planning.html", {
             "form": PaymentForm({'payment': '2'}),
-            "price": getprice(gotform['from_station'].value(),gotform['to_station'].value()),
+            "price": getprice(gotform['from_station'].value(),gotform['to_station'].value(),gotform['travel_class'].value()),
             "trips": gettrips(gotform['from_station'].value(),gotform['to_station'].value()),
         })
 
@@ -84,7 +84,7 @@ def payment(request):
     })
 
 
-def gettrips(from_station, to_station, travel_class = 1, way = 'single'):
+def gettrips(from_station, to_station):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v3/trips"
     params = {"fromStation" : from_station,
             "toStation" : to_station}
@@ -99,7 +99,7 @@ def gettrips(from_station, to_station, travel_class = 1, way = 'single'):
         jsonResponse = result.json()
         legsvar = 0
         trips = []
-        for trip in range(0, len(jsonResponse["trips"])-1):
+        for trip in range(0, len(jsonResponse["trips"])):
             trips.append({"final_destination": jsonResponse['trips'][trip]['legs'][(len(jsonResponse['trips'][trip]['legs'])-1)]['destination']['name'], 
                           "plannedDateTime": jsonResponse['trips'][trip]['legs'][0]['origin']['plannedDateTime'],
                           "plannedDurationInMinutes": jsonResponse['trips'][trip]['plannedDurationInMinutes'], 
@@ -115,7 +115,8 @@ def gettrips(from_station, to_station, travel_class = 1, way = 'single'):
 def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/price"
     params = {"fromStation" : from_station,
-              "toStation" : to_station}
+              "toStation" : to_station,
+              "travelClass": str(travel_class)}
     headers = {'Ocp-Apim-Subscription-Key': '06f223dd2fbc41389afc332c14d17447'}
 
     # SEND A PROPER REQUEST TO URL AND POPULATE "total_price" WITH "totalPriceInCents" FIELD IN THE RESPONSE
