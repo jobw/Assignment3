@@ -4,10 +4,20 @@
     <div class="payment_div">
         <div class="message">
             <div class="blink">
-                <h2>Connecting to your debit card...</h2>
+                <h2>
+                    {% if payment_method == '1' %}
+                        Connecting to Debit Card...
+                    {% elif payment_method == '2' %}
+                        Connecting to Credit Card...
+                    {% elif payment_method == '3' %}
+                        Waiting for cash to be inserted...
+                    {% endif %}
+                </h2>
             </div>
             <p>
-                <a class="button">Back to Home</a>
+                <form id="after_payment_form" class="form_class"  action="{% url 'ticketmachine:index' %}" method="get">
+                    <input class="submit_class" type="submit" value="Home">
+                </form>
             </p>
         </div>
     </div>

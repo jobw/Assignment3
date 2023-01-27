@@ -61,7 +61,7 @@ def planning(request):
         return render(request, "ticketmachine/planning.html", {
             "form": PaymentForm({'payment': '2'}),
             "price": getprice(gotform['from_station'].value(),gotform['to_station'].value()),
-            "trips": gettrips()
+            "trips": gettrips(gotform['from_station'].value(),gotform['to_station'].value()),
         })
 
 
@@ -84,15 +84,32 @@ def payment(request):
     })
 
 
-def gettrips():
+def gettrips(from_station, to_station, travel_class = 1, way = 'single'):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v3/trips"
+    params = {"fromStation" : from_station,
+            "toStation" : to_station}
     headers = {'Ocp-Apim-Subscription-Key': '06f223dd2fbc41389afc332c14d17447'}
 
     # SEND A PROPER REQUEST TO URL AND POPULATE "trips" WITH REQUIRED FIELDS IN THE RESPONSE OF API
-    trips = [{"final_destination": "Amsterdam Centraal", "plannedDateTime": "2023-01-18 10:48",
-              "plannedDurationInMinutes": "38", "transfers": "2",
-              "crowdForecast": "normal"}]
-    return trips
+    # trips = [{"final_destination": "Amsterdam Centraal", "plannedDateTime": "2023-01-18 10:48",
+    #           "plannedDurationInMinutes": "38", "transfers": "2",
+    #           "crowdForecast": "normal"}]
+    result = requests.get(url=url, headers=headers, params=params)
+    if result.status_code == 200:
+        jsonResponse = result.json()
+        legsvar = 0
+        trips = []
+        for trip in range(0, len(jsonResponse["trips"])-1):
+            trips.append({"final_destination": jsonResponse['trips'][trip]['legs'][(len(jsonResponse['trips'][trip]['legs'])-1)]['destination']['name'], 
+                          "plannedDateTime": jsonResponse['trips'][trip]['legs'][0]['origin']['plannedDateTime'],
+                          "plannedDurationInMinutes": jsonResponse['trips'][trip]['plannedDurationInMinutes'], 
+                          "transfers": jsonResponse['trips'][trip]['transfers'],
+                          "crowdForecast": jsonResponse['trips'][trip]['crowdForecast']})
+            
+        return trips
+    else:
+        return result.content
+
 
 
 def getprice(from_station, to_station, travel_class = 1, way = 'single'):
