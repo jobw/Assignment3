@@ -110,8 +110,6 @@ def gettrips(from_station, to_station):
     else:
         return result.content
 
-
-
 def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/price"
     params = {"fromStation" : from_station,
