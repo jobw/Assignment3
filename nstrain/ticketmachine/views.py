@@ -60,7 +60,11 @@ def planning(request):
         gotform = SelectTicketForm(request.GET)
         return render(request, "ticketmachine/planning.html", {
             "form": PaymentForm({'payment': '2'}),
-            "price": getprice(gotform['from_station'].value(),gotform['to_station'].value(),gotform['travel_class'].value(),gotform['way'].value()),
+            "price": getprice(gotform['from_station'].value()
+                             ,gotform['to_station'].value()
+                             ,gotform['travel_class'].value()
+                             ,gotform['way'].value()
+                             ,gotform['passengers'].value()),
             "trips": gettrips(gotform['from_station'].value(),gotform['to_station'].value()),
         })
 
@@ -112,7 +116,7 @@ def gettrips(from_station, to_station):
     else:
         return "The stations you chose don't result in a valid trip"
 
-def getprice(from_station, to_station, travel_class = 1, way = 'single'):
+def getprice(from_station, to_station, travel_class, way, tickets):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/price"
     params = {"fromStation" : from_station,
               "toStation" : to_station,
@@ -127,7 +131,7 @@ def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     result = requests.get(url=url, headers=headers, params=params)
     if result.status_code == 200:
         jsonResponse = result.json()
-        return jsonResponse["payload"]["totalPriceInCents"] / 100
+        return (jsonResponse["payload"]["totalPriceInCents"]* int(tickets)) / 100
     elif result.status_code == 404:
         return "Failed to connect to the price server"
     else:
