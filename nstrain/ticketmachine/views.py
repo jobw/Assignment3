@@ -107,8 +107,10 @@ def gettrips(from_station, to_station):
                           "crowdForecast": jsonResponse['trips'][trip]['crowdForecast']})
             
         return trips
+    elif result.status_code == 404:
+        return "Failed to connect to the information server"
     else:
-        return result.content
+        return "The stations you chose don't result in a valid trip"
 
 def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/price"
@@ -125,6 +127,8 @@ def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     result = requests.get(url=url, headers=headers, params=params)
     if result.status_code == 200:
         jsonResponse = result.json()
-        return jsonResponse["payload"]["totalPriceInCents"]
+        return jsonResponse["payload"]["totalPriceInCents"] / 100
+    elif result.status_code == 404:
+        return "Failed to connect to the price server"
     else:
-        return result.content
+        return "The stations you chose don't result in a valid trip"
