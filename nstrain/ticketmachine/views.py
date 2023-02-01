@@ -127,7 +127,7 @@ def getprice(from_station, to_station, travel_class = 1, way = 'single'):
     result = requests.get(url=url, headers=headers, params=params)
     if result.status_code == 200:
         jsonResponse = result.json()
-        return jsonResponse["payload"]["totalPriceInCents"]
+        return jsonResponse["payload"]["totalPriceInCents"] / 100
     elif result.status_code == 404:
         return "Failed to connect to the price server"
     else:
