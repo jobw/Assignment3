@@ -8,3 +8,4 @@
 /dataSources.local.xml
 # Pycache's
 /__pycache__/*
+*.pyc
