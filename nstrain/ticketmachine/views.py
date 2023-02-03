@@ -34,6 +34,7 @@ payment_methods = (('1', 'Debit Card'),
                    ('3', 'Cash')
                    )
 
+headers = {'Ocp-Apim-Subscription-Key': '06f223dd2fbc41389afc332c14d17447'}
 
 # make a form for ticket
 class SelectTicketForm(forms.Form):
@@ -92,7 +93,6 @@ def gettrips(from_station, to_station):
     url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v3/trips"
     params = {"fromStation" : from_station,
             "toStation" : to_station}
-    headers = {'Ocp-Apim-Subscription-Key': '06f223dd2fbc41389afc332c14d17447'}
 
     # SEND A PROPER REQUEST TO URL AND POPULATE "trips" WITH REQUIRED FIELDS IN THE RESPONSE OF API
     # trips = [{"final_destination": "Amsterdam Centraal", "plannedDateTime": "2023-01-18 10:48",
@@ -122,7 +122,7 @@ def getprice(from_station, to_station, travel_class, way, tickets):
               "toStation" : to_station,
               "travelClass" : str(travel_class),
               "travelType" : way}
-    headers = {'Ocp-Apim-Subscription-Key': '06f223dd2fbc41389afc332c14d17447'}
+
 
     # SEND A PROPER REQUEST TO URL AND POPULATE "total_price" WITH "totalPriceInCents" FIELD IN THE RESPONSE
     print([params])
